@@ -1,0 +1,1 @@
+﻿INSERT INTO PostIts (Title, Body, AuthorId, Uploaded) VALUES ('First', 'This is a message', 2, '1990-01-01');
