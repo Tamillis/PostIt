@@ -1,4 +1,7 @@
-﻿@model IEnumerable<PostItDemo.Models.PostIt>
+﻿@using System.Security.Claims;
+@using PostItDemo.Controllers;
+@using System.Diagnostics;
+@model IEnumerable<PostItDemo.Models.PostIt>
 
 @{
     ViewData["Title"] = "PostIts";
@@ -8,7 +11,14 @@
 
 
 <h2>What do you want to Post?</h2>
-<partial name="_PostForm" model="new PostIt()" />
+
+@if (Utils.UserHasHandle(User))
+{
+    Debug.WriteLine(User);
+    <h3>Hello @Utils.GetUserHandle(User)!</h3>
+}
+
+<partial name="/Views/PostIts/_PostForm.cshtml" model="new PostIt()" />
 
 <table class="table">
     <thead>

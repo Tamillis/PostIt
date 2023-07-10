@@ -2,12 +2,26 @@
     ViewData["Title"] = "Home Page";
 }
 
+@model Author
+
 <div class="text-center">
     <h1 class="display-4">Post It!</h1>
 
-    <form>
-        <p>USERNAME</p>
-        <p>PASSWORD</p>
+    <form asp-action="LogIn">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Handle" class="control-label"></label>
+            <input asp-for="Handle" class="form-control" />
+            <span asp-validation-for="Handle" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Passwd" class="control-label">Password</label>
+            <input asp-for="Passwd" type="password" class="form-control" />
+            <span asp-validation-for="Passwd" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Log In" class="btn btn-primary" />
+        </div>
     </form>
 
     <a asp-controller="PostIts" asp-action="Index">View PostIts</a>
