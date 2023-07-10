@@ -34,7 +34,7 @@ namespace PostItDemo
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=PostIts}/{action=Index}/{id?}");
 
             app.Run();
         }

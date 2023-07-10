@@ -1,14 +1,15 @@
 ﻿@model IEnumerable<PostItDemo.Models.PostIt>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "PostIts";
 }
 
-<h1>Index</h1>
+<h1>PostIts</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
+<h2>What do you want to Post?</h2>
+<partial name="_PostForm" model="new PostIt()" />
+
 <table class="table">
     <thead>
         <tr>
@@ -17,6 +18,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Body)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author.Handle)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Uploaded)
@@ -33,15 +37,26 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Body)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Author.Handle)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Uploaded)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.PostItId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PostItId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PostItId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.PostItId" model="@item" class="btn">Edit</a>
+                <form asp-action="Delete" asp-route-id="@item.PostItId">
+                    <input type="hidden" asp-for="@item.PostItId" />
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </form>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -8,7 +8,7 @@
 
         public string Passwd { get; set; }
 
-        public ICollection<PostIt> PostIts { get; set; }
+        public ICollection<PostIt>? PostIts { get; set; }
 
     }
 }
