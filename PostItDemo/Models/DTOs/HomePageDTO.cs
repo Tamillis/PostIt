@@ -17,7 +17,8 @@
 
         public Author ToAuthor()
         {
-            return new Author() {
+            return new Author()
+            {
                 Id = this.Id,
                 Handle = this.Handle,
                 Passwd = this.Passwd

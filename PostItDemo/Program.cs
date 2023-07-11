@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using PostItDemo.Models;
-using System.Security.Claims;
 
 namespace PostItDemo
 {
@@ -43,7 +41,7 @@ namespace PostItDemo
 
             app.UseCookiePolicy(new CookiePolicyOptions()
             {
-                
+
             });
 
             app.UseRouting();

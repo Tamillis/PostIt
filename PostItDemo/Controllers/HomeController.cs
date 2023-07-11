@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using PostItDemo.Models;
 using System.Diagnostics;
@@ -20,7 +20,7 @@ namespace PostItDemo.Controllers
 
         public IActionResult Index(HomePageDTO? author = null)
         {
-            if (author is null) author = new() { Handle=""};
+            if (author is null) author = new() { Handle = "" };
             return View(author);
         }
 
@@ -28,9 +28,9 @@ namespace PostItDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("Handle", "Passwd")] HomePageDTO author)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                if(Utils.HandleIsIllegal(author.Handle))
+                if (Utils.HandleIsIllegal(author.Handle))
                 {
                     //Handle is invalid
                     _logger.LogInformation($"Register attempt with {author.Handle}, illegal name");
@@ -53,6 +53,7 @@ namespace PostItDemo.Controllers
                 }
 
                 //if checking password integrity, check here
+                author.Passwd = Utils.HashPasswd(author.Passwd);
 
                 //register new user
                 var newUserEntry = _context.Authors.Add(author.ToAuthor());
@@ -73,7 +74,8 @@ namespace PostItDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn([Bind("Id,Handle,Passwd")] HomePageDTO author)
         {
-            if(ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 Author? user = AuthenticateUser(author.Handle, author.Passwd);
 
                 if (user is null)
@@ -139,8 +141,8 @@ namespace PostItDemo.Controllers
 
         private Author? AuthenticateUser(string handle, string pw)
         {
-            //This is of course purely for demo purposes
-            return _context.Authors.Where(a => a.Handle == handle && a.Passwd == pw).FirstOrDefault();
+            string pwHash = Utils.HashPasswd(pw);
+            return _context.Authors.Where(a => a.Handle == handle && a.Passwd == pwHash).FirstOrDefault();
         }
     }
 }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PostItDemo.Models;
+using System.Diagnostics;
 
 namespace PostItDemo.Controllers
 {
@@ -29,17 +24,16 @@ namespace PostItDemo.Controllers
         // POST: PostIts
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index([Bind("PostItId,Title,Body")] PostIt postIt)
+        public async Task<IActionResult> Index([Bind("Title,Body,Handle")] PostDTO postDTO)
         {
-            //TODO replace hard coded values with other value with author data taken from logged-in user
-            postIt.Author = await _context.Authors.FindAsync(2);
-            postIt.Uploaded = DateTime.Now.Date;
+            postDTO.Author = _context.Authors.Where(a => a.Handle == postDTO.Handle).FirstOrDefault();
+
+            postDTO.Uploaded = DateTime.Now.Date;
 
             if (ModelState.IsValid)
             {
-                _context.Add(postIt);
+                _context.Add(postDTO.ToPostIt());
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
 
             return RedirectToAction(nameof(Index));
@@ -102,10 +96,10 @@ namespace PostItDemo.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.PostIts == null) return NotFound();
-            
+
             var postIt = await _context.PostIts.FirstOrDefaultAsync(m => m.PostItId == id);
             if (postIt == null) return NotFound();
-            
+
             return View(postIt);
         }
 
@@ -133,7 +127,7 @@ namespace PostItDemo.Controllers
 
         private bool PostItExists(int id)
         {
-          return (_context.PostIts?.Any(e => e.PostItId == id)).GetValueOrDefault();
+            return (_context.PostIts?.Any(e => e.PostItId == id)).GetValueOrDefault();
         }
     }
 }
