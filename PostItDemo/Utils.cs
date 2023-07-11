@@ -12,4 +12,10 @@ public static class Utils
     {
         return user.Claims.Where(c => c.Type == "Handle").FirstOrDefault().Value;
     }
+
+    public static bool HandleIsIllegal(string handle)
+    {
+        //Here would be where you load an external library or list of taboo words
+        return handle == "Anon";
+    }
 }

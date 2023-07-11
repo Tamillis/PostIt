@@ -12,9 +12,8 @@
 
 <h2>What do you want to Post?</h2>
 
-@if (Utils.UserHasHandle(User))
+@if (null != User && Utils.UserHasHandle(User))
 {
-    Debug.WriteLine(User);
     <h3>Hello @Utils.GetUserHandle(User)!</h3>
 }
 
@@ -42,13 +41,22 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @item.Title
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Body)
+                @item.Body
             </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Author.Handle)
+                    @{
+                        if (item.Author == null) {
+                            string msg = "Anon";
+                            @msg
+                        }
+                        else {
+                            Debug.WriteLine("Handle: " + item.Author.Handle);
+                            @item.Author.Handle
+                        }
+                    }
                 </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Uploaded)

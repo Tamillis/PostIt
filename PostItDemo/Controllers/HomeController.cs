@@ -18,23 +18,71 @@ namespace PostItDemo.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(HomePageDTO? author = null)
         {
-            return View();
+            if (author is null) author = new() { Handle=""};
+            return View(author);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register([Bind("Handle", "Passwd")] HomePageDTO author)
+        {
+            if(ModelState.IsValid)
+            {
+                if(Utils.HandleIsIllegal(author.Handle))
+                {
+                    //Handle is invalid
+                    _logger.LogInformation($"Register attempt with {author.Handle}, illegal name");
+
+                    author.Error = true;
+                    author.ErrorMessage = $"Handle {author.Handle} is not allowed";
+
+                    return View("Index", author);
+                }
+
+                if (_context.Authors.Where(a => a.Handle == author.Handle).ToList().Count > 0)
+                {
+                    //Handle already exists
+                    _logger.LogInformation($"Register attempt with {author.Handle} failed, taken");
+
+                    author.Error = true;
+                    author.ErrorMessage = $"Handle {author.Handle} is taken";
+
+                    return View("Index", author);
+                }
+
+                //if checking password integrity, check here
+
+                //register new user
+                var newUserEntry = _context.Authors.Add(author.ToAuthor());
+                await _context.SaveChangesAsync();
+
+                await newUserEntry.ReloadAsync();
+
+                var newUser = new HomePageDTO(newUserEntry.Entity) { NewlyRegistered = true };
+
+                return View("Index", newUser);
+            }
+
+            return View("Index");
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogIn([Bind("Id,Handle,Passwd")] Author author)
+        public async Task<IActionResult> LogIn([Bind("Id,Handle,Passwd")] HomePageDTO author)
         {
             if(ModelState.IsValid) {
-                var user = AuthenticateUser(author.Handle, author.Passwd);
+                Author? user = AuthenticateUser(author.Handle, author.Passwd);
 
                 if (user is null)
                 {
                     _logger.LogInformation($"Login attempt with Author {author.Handle} failed");
-                    return RedirectToAction(nameof(Index));
+
+                    author.Error = true;
+                    author.ErrorMessage = "Handle or Password mistaken.";
+                    return View("Index", author);
                 }
 
                 //create authentication cookie, courtesy https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-7.0
@@ -65,15 +113,17 @@ namespace PostItDemo.Controllers
                     authProperties);
 
                 _logger.LogInformation($"Author {user.Handle} logged in at {DateTime.UtcNow}");
+
+                return RedirectToAction("Index", "PostIts");
             }
-            return RedirectToAction("Index", "PostIts");
+            return View("Index", author);
         }
 
         public async Task<IActionResult> LogOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return View();
+            return View("Index");
         }
 
         public IActionResult Privacy()
