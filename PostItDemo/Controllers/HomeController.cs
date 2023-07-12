@@ -53,12 +53,23 @@ namespace PostItDemo.Controllers
                 }
 
                 //if checking password integrity, check here
+                if (author.Passwd == "")
+                {
+                    //Handle already exists
+                    _logger.LogInformation($"Register attempt with blank password, invalid");
+
+                    author.Error = true;
+                    author.ErrorMessage = $"Blank passwords are invalid.";
+
+                    return View("Index", author);
+                }
                 author.Passwd = Utils.HashPasswd(author.Passwd);
 
                 //register new user
                 var newUserEntry = _context.Authors.Add(author.ToAuthor());
                 await _context.SaveChangesAsync();
 
+                //refresh data so that the newUser has the auto incremented ID
                 await newUserEntry.ReloadAsync();
 
                 var newUser = new HomePageDTO(newUserEntry.Entity) { NewlyRegistered = true };
@@ -67,6 +78,17 @@ namespace PostItDemo.Controllers
             }
 
             return View("Index");
+        }
+
+        public async Task<IActionResult> LogOut()
+        {
+            // Clear the existing external cookie
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // Clear the current context's User (otherwise logout doesn't happen until a refresh)
+            HttpContext.User = new ClaimsPrincipal();
+            
+            var blankUser = new HomePageDTO();
+            return View("Index", blankUser);
         }
 
 
@@ -102,7 +124,7 @@ namespace PostItDemo.Controllers
                 {
                     AllowRefresh = true,
                     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(6),
-                    IsPersistent = true,
+                    IsPersistent = false,
                     IssuedUtc = DateTimeOffset.UtcNow,
                     RedirectUri = Url.Action("Index", "Home")
                     // The full path or absolute URI to be used as an http 
@@ -119,13 +141,6 @@ namespace PostItDemo.Controllers
                 return RedirectToAction("Index", "PostIts");
             }
             return View("Index", author);
-        }
-
-        public async Task<IActionResult> LogOut()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return View("Index");
         }
 
         public IActionResult Privacy()

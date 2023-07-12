@@ -18,7 +18,14 @@ namespace PostItDemo.Controllers
         public async Task<IActionResult> Index()
         {
             var postIts = await _context.PostIts.Include(p => p.Author).ToListAsync();
-            return View(postIts);
+            List<PostDTO> posts = new();
+
+            foreach(var postIt in postIts)
+            {
+                posts.Add(new PostDTO(postIt));
+            }
+
+            return View(posts);
         }
 
         // POST: PostIts

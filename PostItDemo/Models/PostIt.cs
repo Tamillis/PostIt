@@ -13,5 +13,17 @@ namespace PostItDemo.Models
         public Author? Author { get; set; }
 
         public DateTime Uploaded { get; set; }
+
+        public PostIt() { }
+
+        public PostIt(PostIt p)
+        {
+            PostItId = p.PostItId;
+            MotherPostIt = p.MotherPostIt;
+            Title = p.Title;
+            Body = p.Body;
+            Author = p.Author;
+            Uploaded = p.Uploaded;
+        }
     }
 }

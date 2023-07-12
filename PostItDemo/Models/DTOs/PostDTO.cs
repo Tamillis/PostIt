@@ -4,6 +4,12 @@
     {
         public string Handle { get; set; } = "Anon";
 
+        public PostDTO(PostIt p) : base(p) {
+            if(p.Author is not null) Handle = p.Author.Handle;
+        }
+
+        public PostDTO() { }
+
         internal object ToPostIt()
         {
             return new PostIt()
