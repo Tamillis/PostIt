@@ -1,4 +1,5 @@
-﻿@{
+﻿@using PostItDemo.Controllers;
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -13,7 +14,7 @@
         if (Model != null && Model.Passwd != null) prevPassword = Model.Passwd;
     }
     @{
-        if (Model.NewlyRegistered)
+        if (Model is not null && Model.NewlyRegistered)
         {
             <h2 class="display-6">@Model.Handle Registered!</h2>
             <h3 class="text-md-center">Please Log In</h3>

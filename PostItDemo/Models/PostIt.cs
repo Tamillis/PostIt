@@ -14,6 +14,17 @@ namespace PostItDemo.Models
 
         public DateTime Uploaded { get; set; }
 
+        public int Likes
+        {
+            get
+            {
+                if (AuthorLikes is null) return 0;
+                else return AuthorLikes.Count;
+            }
+        }
+
+        public ICollection<AuthorLike>? AuthorLikes { get; set; }
+
         public PostIt() { }
 
         public PostIt(PostIt p)

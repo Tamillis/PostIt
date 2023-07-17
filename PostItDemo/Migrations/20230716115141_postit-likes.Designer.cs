@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PostItDemo.Models;
 
@@ -11,9 +12,11 @@ using PostItDemo.Models;
 namespace PostItDemo.Migrations
 {
     [DbContext(typeof(PostItContext))]
-    partial class PostItContextModelSnapshot : ModelSnapshot
+    [Migration("20230716115141_postit-likes")]
+    partial class postitlikes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,29 +44,6 @@ namespace PostItDemo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
-                });
-
-            modelBuilder.Entity("PostItDemo.Models.AuthorLike", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PostItId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("PostItId");
-
-                    b.ToTable("AuthorLikes");
                 });
 
             modelBuilder.Entity("PostItDemo.Models.PostIt", b =>
@@ -101,25 +81,6 @@ namespace PostItDemo.Migrations
                     b.ToTable("PostIts");
                 });
 
-            modelBuilder.Entity("PostItDemo.Models.AuthorLike", b =>
-                {
-                    b.HasOne("PostItDemo.Models.Author", "Author")
-                        .WithMany("AuthorLikes")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PostItDemo.Models.PostIt", "PostIt")
-                        .WithMany("AuthorLikes")
-                        .HasForeignKey("PostItId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-
-                    b.Navigation("PostIt");
-                });
-
             modelBuilder.Entity("PostItDemo.Models.PostIt", b =>
                 {
                     b.HasOne("PostItDemo.Models.Author", "Author")
@@ -131,14 +92,7 @@ namespace PostItDemo.Migrations
 
             modelBuilder.Entity("PostItDemo.Models.Author", b =>
                 {
-                    b.Navigation("AuthorLikes");
-
                     b.Navigation("PostIts");
-                });
-
-            modelBuilder.Entity("PostItDemo.Models.PostIt", b =>
-                {
-                    b.Navigation("AuthorLikes");
                 });
 #pragma warning restore 612, 618
         }

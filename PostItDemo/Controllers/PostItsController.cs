@@ -7,23 +7,46 @@ namespace PostItDemo.Controllers
 {
     public class PostItsController : Controller
     {
-        private readonly PostItContext _context;
+        private readonly PostItContext _context; 
+        private readonly ILogger<PostItsController> _logger;
 
-        public PostItsController(PostItContext context)
+        public PostItsController(ILogger<PostItsController> logger, PostItContext context)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // GET: PostIts
-        public async Task<IActionResult> Index()
+        // GET: PostIts/{id} (Id is optional, in which case all posts are fetched)
+        public async Task<IActionResult> Index(int? id)
         {
-            var postIts = await _context.PostIts.Include(p => p.Author).ToListAsync();
+            var postIts = await _context.PostIts.Include(p => p.Author).Include(p=>p.AuthorLikes).ToListAsync();
+
+            if(id != null)
+            {
+                postIts = postIts.Where(p => p.PostItId == id).ToList();
+            }
+
+            if (postIts == null)
+            {
+                return NotFound();
+            }
+
             List<PostDTO> posts = new();
 
             foreach(var postIt in postIts)
             {
-                posts.Add(new PostDTO(postIt));
+                var postDTO = new PostDTO(postIt);
+                if (Utils.UserHasHandle(HttpContext.User)) {
+                    postDTO.UserAuthor = await _context.Authors
+                        .Where(a => a.Handle == Utils.GetUserHandle(HttpContext.User))
+                        .FirstOrDefaultAsync();
+                    postDTO.AuthorLikes = await _context.AuthorLikes.Where(al => al.PostIt.PostItId == postDTO.PostItId).ToListAsync();
+                }
+                posts.Add(postDTO);
             }
+
+            //order by algorithm implemented in PostDTO comparable implementation
+            posts.Sort();
 
             return View(posts);
         }
@@ -42,6 +65,72 @@ namespace PostItDemo.Controllers
                 _context.Add(postDTO.ToPostIt());
                 await _context.SaveChangesAsync();
             }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: PostIts/Like/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Like(int id)
+        {
+            if (_context.PostIts == null)
+            {
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            var postIt = await _context.PostIts.FindAsync(id);
+            if (postIt == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userAuthor = await GetUserAuthor();
+            if(userAuthor is null) return RedirectToAction(nameof(Index));
+
+            var newAuthorLike = new AuthorLike()
+            {
+                Author = userAuthor,
+                PostIt = postIt
+            };
+
+            postIt.AuthorLikes ??= new List<AuthorLike>();
+
+            postIt.AuthorLikes.Add(newAuthorLike);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: PostIts/Unlike/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Unlike(int id)
+        {
+            Debug.WriteLine("Unlike " + id);
+
+            var postIt = await _context.PostIts
+                .Include(p=>p.AuthorLikes)
+                .ThenInclude(al => al.Author)
+                .Where(p=>p.PostItId==id)
+                .FirstOrDefaultAsync();
+
+            var userAuthor = await GetUserAuthor();
+
+            if (postIt != null && postIt.AuthorLikes != null && userAuthor != null)
+            {
+                var likesToRemove = postIt.AuthorLikes.Where(al => al.Author.Id == userAuthor.Id);
+                
+                foreach(var like in likesToRemove)
+                {
+                    postIt.AuthorLikes.Remove(like);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            else return Problem($"Entity at Id {id} not found");
 
             return RedirectToAction(nameof(Index));
         }
@@ -99,17 +188,6 @@ namespace PostItDemo.Controllers
             return View(postIt);
         }
 
-        // GET: PostIts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.PostIts == null) return NotFound();
-
-            var postIt = await _context.PostIts.FirstOrDefaultAsync(m => m.PostItId == id);
-            if (postIt == null) return NotFound();
-
-            return View(postIt);
-        }
-
         // POST: PostIts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -135,6 +213,12 @@ namespace PostItDemo.Controllers
         private bool PostItExists(int id)
         {
             return (_context.PostIts?.Any(e => e.PostItId == id)).GetValueOrDefault();
+        }
+
+        private async Task<Author?> GetUserAuthor()
+        {
+            if (!Utils.UserHasHandle(HttpContext.User)) return null;
+            return await _context.Authors.Where(a => a.Handle == Utils.GetUserHandle(HttpContext.User)).FirstOrDefaultAsync();
         }
     }
 }

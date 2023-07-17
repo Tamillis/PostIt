@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.EntityFrameworkCore;
+using PostItDemo.Models;
 using System.Security.Claims;
 
-namespace PostItDemo;
+namespace PostItDemo.Controllers;
 
 public static class Utils
 {
@@ -33,4 +35,13 @@ public static class Utils
             numBytesRequested: 256 / 8
         ));
     }
+
+    public static double GetPostValue(PostIt post)
+    {
+        //A very basic algorithm for now, as its mostly for demo purposes
+        var sinceToday = DateTime.Now - post.Uploaded;
+        return (1 + post.Likes) / (1 + sinceToday.TotalDays);
+    }
+
+
 }

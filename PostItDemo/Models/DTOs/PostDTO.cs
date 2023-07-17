@@ -1,16 +1,28 @@
-﻿namespace PostItDemo.Models
+﻿using PostItDemo.Controllers;
+
+namespace PostItDemo.Models
 {
-    public class PostDTO : PostIt
+    public class PostDTO : PostIt, IEquatable<PostDTO>, IComparable<PostDTO>
     {
         public string Handle { get; set; } = "Anon";
+        public Author? UserAuthor { get; set; } = null;
 
         public PostDTO(PostIt p) : base(p) {
-            if(p.Author is not null) Handle = p.Author.Handle;
+            if (p.Author is not null)
+            {
+                Handle = p.Author.Handle;
+            }
         }
 
         public PostDTO() { }
 
-        internal object ToPostIt()
+        public bool PostIsLikedByUser()
+        {
+            if (AuthorLikes is null || UserAuthor is null) return false;
+            return AuthorLikes.Where(al => al.Author.Id == UserAuthor.Id).ToList().Count > 0;
+        }
+
+        public PostIt ToPostIt()
         {
             return new PostIt()
             {
@@ -21,6 +33,21 @@
                 Author = this.Author,
                 Uploaded = this.Uploaded
             };
+        }
+
+        public bool Equals(PostDTO? other)
+        {
+            if (other is null) return false;
+
+            return PostItId.Equals(other.PostItId);
+        }
+
+        public int CompareTo(PostDTO? other)
+        {
+            if (other is null) return 1;
+            else if (Equals(other)) return 0;
+            else if (Utils.GetPostValue(this) < Utils.GetPostValue(other)) return 1;
+            else return -1;
         }
     }
 }

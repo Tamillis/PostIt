@@ -1,4 +1,5 @@
-﻿@model PostItDemo.Models.PostIt
+﻿@using PostItDemo.Controllers;
+@model PostItDemo.Models.PostIt
 @{
     string handle = "Anon";
     if (null != User && Utils.UserHasHandle(User))

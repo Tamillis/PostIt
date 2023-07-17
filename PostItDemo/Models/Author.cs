@@ -1,4 +1,6 @@
-﻿namespace PostItDemo.Models
+﻿using System.ComponentModel;
+
+namespace PostItDemo.Models
 {
     public class Author
     {
@@ -6,9 +8,12 @@
 
         public string Handle { get; set; }
 
+        [DisplayName("Password")]
         public string Passwd { get; set; }
 
         public ICollection<PostIt>? PostIts { get; set; }
+
+        public ICollection<AuthorLike>? AuthorLikes { get; set; }
 
     }
 }

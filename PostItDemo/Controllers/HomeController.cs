@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PostItDemo.Models;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -94,7 +95,7 @@ namespace PostItDemo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogIn([Bind("Id,Handle,Passwd")] HomePageDTO author)
+        public async Task<IActionResult> LogIn([Bind("Handle,Passwd")] HomePageDTO author)
         {
             if (ModelState.IsValid)
             {
@@ -126,7 +127,7 @@ namespace PostItDemo.Controllers
                     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(6),
                     IsPersistent = false,
                     IssuedUtc = DateTimeOffset.UtcNow,
-                    RedirectUri = Url.Action("Index", "Home")
+                    RedirectUri = Url.Action("Index", "PostIts")
                     // The full path or absolute URI to be used as an http 
                     // redirect response value.
                 };
@@ -140,6 +141,7 @@ namespace PostItDemo.Controllers
 
                 return RedirectToAction("Index", "PostIts");
             }
+
             return View("Index", author);
         }
 

@@ -6,6 +6,7 @@ namespace PostItDemo.Models
     {
         public DbSet<Author> Authors { get; set; }
         public DbSet<PostIt> PostIts { get; set; }
+        public DbSet<AuthorLike> AuthorLikes { get; set; }
 
         public PostItContext(DbContextOptions<PostItContext> options) : base(options) { }
     }

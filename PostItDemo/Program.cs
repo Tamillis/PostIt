@@ -47,6 +47,11 @@ namespace PostItDemo
             app.UseRouting();
 
             app.MapControllerRoute(
+                name: "post",
+                pattern: "PostIts/{id?}",
+                defaults: new {controller = "PostIts", action = "Index"});
+
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
