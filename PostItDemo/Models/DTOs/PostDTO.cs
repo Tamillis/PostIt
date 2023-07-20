@@ -7,11 +7,17 @@ namespace PostItDemo.Models
         public string Handle { get; set; } = "Anon";
         public Author? UserAuthor { get; set; } = null;
 
-        public PostDTO(PostIt p) : base(p) {
-            if (p.Author is not null)
+        public ICollection<PostDTO> ChildPosts { get; set; } = new List<PostDTO>();
+
+        public int Replies { get
             {
-                Handle = p.Author.Handle;
-            }
+                return ChildPosts.Count;
+            } }
+
+        public PostDTO(PostIt p, Author? userAuthor = null, ICollection<AuthorLike>? authorLikes = null) : base(p) {
+            if (p.Author is not null) Handle = p.Author.Handle;
+            if (userAuthor is not null) UserAuthor = userAuthor;
+            if (authorLikes is not null) AuthorLikes = authorLikes;
         }
 
         public PostDTO() { }

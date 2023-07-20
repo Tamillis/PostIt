@@ -16,34 +16,38 @@ namespace PostItDemo.Controllers
             _logger = logger;
         }
 
-        // GET: PostIts/{id} (Id is optional, in which case all posts are fetched)
-        public async Task<IActionResult> Index(int? id)
+        // GET: gets all posts
+        public async Task<IActionResult> Index()
         {
-            var postIts = await _context.PostIts.Include(p => p.Author).Include(p=>p.AuthorLikes).ToListAsync();
-
-            if(id != null)
-            {
-                postIts = postIts.Where(p => p.PostItId == id).ToList();
-            }
+            //get all posts
+            List<PostIt> postIts = await _context.PostIts
+                .Include(p => p.Author)
+                .Include(p=>p.AuthorLikes)                
+                .ToListAsync()!;
 
             if (postIts == null)
             {
                 return NotFound();
             }
 
+            //setup DTO with their extra data needed by the view; child posts, current user etc.
             List<PostDTO> posts = new();
 
             foreach(var postIt in postIts)
             {
-                var postDTO = new PostDTO(postIt);
-                if (Utils.UserHasHandle(HttpContext.User)) {
-                    postDTO.UserAuthor = await _context.Authors
-                        .Where(a => a.Handle == Utils.GetUserHandle(HttpContext.User))
-                        .FirstOrDefaultAsync();
-                    postDTO.AuthorLikes = await _context.AuthorLikes.Where(al => al.PostIt.PostItId == postDTO.PostItId).ToListAsync();
-                }
+                var authorLikes = 
+                    await _context.AuthorLikes
+                    .Where(al => al.PostIt.PostItId == postIt.PostItId)
+                    .ToListAsync();
+
+                var postDTO = new PostDTO(postIt, await GetUserAuthor(), authorLikes);
+
+                postDTO.ChildPosts = GetChildPosts(postIt.PostItId, postIts);
+                
                 posts.Add(postDTO);
             }
+
+            posts = posts.Where(p => p.MotherPostIt == 0).ToList();
 
             //order by algorithm implemented in PostDTO comparable implementation
             posts.Sort();
@@ -62,8 +66,65 @@ namespace PostItDemo.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Add(postDTO.ToPostIt());
+                _context.PostIts.Add(postDTO.ToPostIt());
                 await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: PostIts/{id} View one particular posts, and its direct replies
+        [HttpGet, ActionName("View")]
+        public async Task<IActionResult> ViewDetails(int id)
+        {
+            var post = await _context.PostIts
+                .Include(p => p.Author)
+                .Include(p => p.AuthorLikes)
+                .Where(p => p.PostItId == id)
+                .FirstOrDefaultAsync();
+            var postIts = await _context.PostIts
+                .Include(p => p.Author)
+                .Include(p => p.AuthorLikes)
+                .ToListAsync();
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            //setup DTO with their extra data needed by the view; child posts, current user etc.
+
+            var authorLikes =
+                await _context.AuthorLikes
+                .Where(al => al.PostIt.PostItId == post.PostItId)
+                .ToListAsync();
+
+            var postDTO = new PostDTO(post, await GetUserAuthor(), authorLikes);
+
+            postDTO.ChildPosts = GetChildPosts(post.PostItId, postIts);
+
+            return View(postDTO);
+        }
+
+        // POST: View
+        [HttpPost, ActionName("View")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ViewDetails([Bind("Title,Body,Handle,MotherPostIt")] PostDTO postDTO)
+        {
+            postDTO.Author = await GetUserAuthor();
+
+            postDTO.Uploaded = DateTime.Now.Date;
+
+            _logger.LogInformation($"{postDTO.MotherPostIt}");
+
+            if (ModelState.IsValid)
+            {
+                _context.PostIts.Add(postDTO.ToPostIt());
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                Problem($"ModelState is invalid for {postDTO}");
             }
 
             return RedirectToAction(nameof(Index));
@@ -219,6 +280,22 @@ namespace PostItDemo.Controllers
         {
             if (!Utils.UserHasHandle(HttpContext.User)) return null;
             return await _context.Authors.Where(a => a.Handle == Utils.GetUserHandle(HttpContext.User)).FirstOrDefaultAsync();
+        }
+
+        private List<PostDTO> GetChildPosts(int postItId, List<PostIt> allPosts)
+        {
+            var childPosts = allPosts.Where(p => p.MotherPostIt == postItId).ToList();
+            var childPostDTOs = new List<PostDTO>();
+
+            foreach (var post in childPosts)
+            {
+                var childPostDTO = new PostDTO(post);
+
+                childPostDTO.ChildPosts = GetChildPosts(post.PostItId, allPosts);
+                childPostDTOs.Add(childPostDTO);
+            }
+
+            return childPostDTOs;
         }
     }
 }

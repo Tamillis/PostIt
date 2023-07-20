@@ -37,6 +37,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Likes)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Replies)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -48,17 +51,17 @@
             <td>
                 @item.Body
             </td>
-                <td>
-                    @{
-                        if (item.Author == null) {
-                            string msg = "Anon";
-                            @msg
-                        }
-                        else {
-                            @item.Author.Handle
-                        }
+            <td>
+                @{
+                    if (item.Author == null) {
+                        string msg = "Anon";
+                        @msg
                     }
-                </td>
+                    else {
+                        @item.Author.Handle
+                    }
+                }
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Uploaded)
             </td>
@@ -66,36 +69,37 @@
                 @Html.DisplayFor(modelItem => item.Likes)
             </td>
             <td>
-                <div class="group">
-                    @if(User is not null && Utils.UserHasHandle(User)){
+                @Html.DisplayFor(modelItem => item.Replies)
+            </td>
+            <td class="group">
+                @if(User is not null && Utils.UserHasHandle(User)){
 
-                        if (!item.PostIsLikedByUser())
-                        {
-                            <form asp-action="Like" asp-route-id="@item.PostItId">
-                                <input type="hidden" asp-for="@item.PostItId" />
-                                <input type="submit" value="Like" class="btn btn-secondary"/>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-action="Unlike" asp-route-id="@item.PostItId">
-                                <input type="hidden" asp-for="@item.PostItId" />
-                                <input type="submit" value="Unlike" class="btn btn-secondary" />
-                            </form>
-                        }
-                    }
-                        
-                    <a asp-action="Index" asp-route-id="@item.PostItId" class="btn btn-secondary">View</a>
-                    @if(Utils.UserHasHandle(User) && Utils.GetUserHandle(User) == item.Handle)
+                    if (!item.PostIsLikedByUser())
                     {
-                    
-                            <a asp-action="Edit" asp-route-id="@item.PostItId" model="@item" class="btn">Edit</a>
-                            <form asp-action="Delete" asp-route-id="@item.PostItId" >
-                                <input type="hidden" asp-for="@item.PostItId" />
-                                <input type="submit" value="Delete" class="btn btn-danger" />
-                            </form>
+                        <form asp-action="Like" asp-route-id="@item.PostItId">
+                            <input type="hidden" asp-for="@item.PostItId" />
+                            <input type="submit" value="Like" class="btn btn-secondary"/>
+                        </form>
                     }
-                </div>
+                    else
+                    {
+                        <form asp-action="Unlike" asp-route-id="@item.PostItId">
+                            <input type="hidden" asp-for="@item.PostItId" />
+                            <input type="submit" value="Unlike" class="btn btn-secondary" />
+                        </form>
+                    }
+                }
+                        
+                <a asp-action="View" asp-route-id="@item.PostItId" class="btn btn-secondary">View</a>
+                @if(Utils.UserHasHandle(User) && Utils.GetUserHandle(User) == item.Handle)
+                {
+                    
+                        <a asp-action="Edit" asp-route-id="@item.PostItId" model="@item" class="btn">Edit</a>
+                        <form asp-action="Delete" asp-route-id="@item.PostItId" >
+                            <input type="hidden" asp-for="@item.PostItId" />
+                            <input type="submit" value="Delete" class="btn btn-danger" />
+                        </form>
+                }
             </td>
         </tr>
     }

@@ -10,6 +10,7 @@
 <form asp-action="Index">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" value="@handle" name="Handle"/>
+    <input type="hidden" value="@Model.PostItId" name="MotherPostIt" />
     <div class="form-group">
         <label asp-for="Title" class="control-label"></label>
         <input asp-for="Title" class="form-control" />
