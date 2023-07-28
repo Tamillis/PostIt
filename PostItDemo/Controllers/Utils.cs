@@ -9,11 +9,19 @@ public static class Utils
 {
     public static bool UserHasHandle(ClaimsPrincipal? user)
     {
-        return user != null && user.Claims.Where(c => c.Type == "Handle").FirstOrDefault() is not null;
+        return user != null &&
+            user.Claims is not null &&
+            user.Claims.Where(c => c.Type == "Handle").FirstOrDefault() is not null;
     }
     public static string GetUserHandle(ClaimsPrincipal user)
     {
-        return user.Claims.Where(c => c.Type == "Handle").FirstOrDefault().Value;
+        if (user.Claims is null) throw new Exception("No claims found on user");
+
+        var handleClaim = user.Claims.Where(c => c.Type == "Handle").FirstOrDefault();
+
+        if (handleClaim is null) throw new Exception("No Handle claim found on user");
+
+        return handleClaim.Value;
     }
 
     public static bool HandleIsIllegal(string handle)

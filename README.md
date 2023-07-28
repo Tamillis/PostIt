@@ -1,43 +1,44 @@
 # PostIt
-A .NET Entity Framework using Web App demonstration.
+A .NET, Entity Framework, SpecFlow, MVC Web App demonstration.
 
-A very simple twitter clone where users can post short message with a title and a body, see everyone's posts organised by relevance (a simple recency + likes formula) and leave comment posts, i.e. posts that are anchored to some other post Id, which are displayed in a post's details web page.
+<img src="./PostItDemo/Assets/PostItsLogo.png" style="float:right;top:0px;" width="200px"/>
 
-
-## Current State of the Project
-Sprint 1 is complete as of this push. Ready to start sprint 2, which doubles as a demonstration of the entire sprint process. There will be links to a kanban board, User Stories, Figma design board, a metro retrospective and a redone README suitable for the project. The README will contain an example of a User Story, its breakdown into SpecFlow Unit Tests, the result of those tests (passing) and then a short section on the code that makes it pass, all together functioning as a demonstration of TDD.
-
-## Current Goal
-Complete the initial basic project (purely focusing on back-end functionality), in order to then enter a "second sprint" as a demonstration of a proper Agile-Scrum processes with a Kanban board (Found Here: PROVIDE LINK) and the goal of making the project testable with a service layer, so will be employing a Test-First Dev approach: User Stories -> Tests -> Make Tests Pass.
+A very simple twitter clone where users can register & log in, post short messages with a title and a body, see everyone's posts organised by relevance (a simple recency + likes formula) and leave comment posts, i.e. posts that are anchored to some other post Id, which are displayed in a post's details web page.
 
 ## Feature List
 Simple Cookie-based Authentication system, usernames (Author "Handles") and passwords (hashed) stored on the SQL database directly.
 
-Ability to Register, Sign In and Sign Out.
+- Cookie-based Registration, with and Sign In and Sign Out.
+- Ability to make posts anonymously if not logged in
+- A main view where all posts can be seen
+- A per-post view where comment posts can be left, other comment posts seen
+- Can Edit and Delete your own posts, but not others'
 
-Ability to view all posts and single posts via ID.
+## Current State of the Project
+Sprint 1 is complete as of this push. Ready to start sprint 2, which doubles as a demonstration of the entire sprint process. There will be links to a kanban board, User Stories, Figma design board, a metro retrospective and a redone README suitable for the project. The README will contain an example of a User Story, its breakdown into SpecFlow Unit Tests, the result of those tests (passing) and then a short section on the code that makes it pass, all together functioning as a demonstration of TDD.
 
-Ability to make posts anonymously if not logged in
+## QA Demonstration
+A quick demonstration of Unit testing can be found in the code [here](./PostItsTests/UtilsTests.cs)
 
-Can Edit and Delete your posts, but not others'
+## User Journey Demonstration
 
-Can make posts when viewing a post, making that post a reply (and see other replies)
+- User Story (Kanban board screenshot)
+- Tests (Unit testing project code screenshot)
+- Implementation (Code implementation screenshot)
+- Product (website screenshot/s)
 
-## TODO
+## KANBAN Board
 
-Fixup front end (2nd sprint)
+https://github.com/users/Tamillis/projects/2
 
-Validation - move input validation from jquery to custom onchange() with better feedback, and also do validation on the server-side (2nd sprint)
+## Figma Design
+LINK
 
-Completely remove Bootstrap and use something else, like Pico with some custom css classes. (2nd / 3rd Sprint)
+## Metroretro Retrospective
+LINK
 
-Add a service layer to enable testing of backend functionality (2nd sprint)
+## Installation
 
-Publish the site online via Azure. (2nd sprint)
+Under releases, download the provided .zip, unzip and, using Visual Studio (with ASP.NET and web development & SQL Server installed), open the .sln, click run.
 
-Add an Author profile page (3rd sprint)
-- including a way to see all your authored posts, most likely just as a filter on the main view
-
-Remove the /Edit path and make editing in-line* (push feature)
-
-Pop-up warning to delete?* (push feature)
+For the latest development iteration: clone the repo and load the .sln with Visual Studio (with ASP.NET and web development & SQL Server installed), and click run.
