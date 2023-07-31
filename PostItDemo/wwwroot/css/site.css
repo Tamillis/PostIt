@@ -20,3 +20,51 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.main-posts {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.single-post {
+    background-image: url("/Assets/blank_sticky_note.png");
+    background-size: max(15vw, 400px);
+
+    width: 15vw;
+    height: 15vw;
+    min-width: 400px;
+    min-height: 400px;
+
+    padding: 3rem;
+    margin: 0px;
+    transform: rotate(-5deg);
+}
+
+.post-header, .post-secondary, .post-meta, .post-interaction {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.post-header {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed black;
+    height: 25%
+}
+
+.post-secondary, .post-meta {
+    height: 10%;
+}
+
+.post-title {
+    justify-self: flex-start;
+    font-size: 1.5rem;
+    height: 20%;
+}
+
+.post-body {
+    padding: 0.5rem 0px;
+    border-bottom: 1px dashed black;
+    height: 32%;
+}

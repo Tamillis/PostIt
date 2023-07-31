@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostItDemo", "PostItDemo\PostItDemo.csproj", "{83CCAED9-CA99-4547-9019-A7853C9CD81B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostItsTests", "PostItsTests\PostItsTests.csproj", "{D1CE0155-F8F6-4F9F-BD2E-AEAE9A635C94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostItsTests", "PostItsTests\PostItsTests.csproj", "{D1CE0155-F8F6-4F9F-BD2E-AEAE9A635C94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

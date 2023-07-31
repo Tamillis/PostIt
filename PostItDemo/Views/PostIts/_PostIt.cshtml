@@ -1,0 +1,52 @@
+﻿@using PostItDemo.Controllers;
+@model PostItDemo.Models.PostDTO
+@{
+    string date = $"{Model.Uploaded.Year}/{Model.Uploaded.Month}/{Model.Uploaded.Day}";
+}
+
+<div class="single-post">
+    <div class="post-header">
+        <p class="post-title">@Model.Title</p>
+        <div class="post-controls">
+            @if (Utils.UserHasHandle(User) && Utils.GetUserHandle(User) == Model.Handle)
+            {
+                <a id="post-edit" asp-action="Edit" asp-route-id="@Model.PostItId" model="@Model" class="btn btn-info">Edit</a>
+                <form asp-action="Delete" asp-route-id="@Model.PostItId">
+                    <input type="hidden" asp-for="@Model.PostItId" />
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </form>
+            }
+        </div>
+    </div>
+    <p class="text text-body post-body">@Model.Body</p>
+    <div class="post-secondary">
+        <p id="post-author">@Model.Handle</p>
+        <p id="post-date">@date</p>
+    </div>
+    <div class="post-meta">
+        <p id="post-likes">+@Model.Likes</p>
+        <p id="post-replies">Replies <span id="post-replies-value">@Model.Replies</span></p>
+    </div>
+    <div class="post-interaction">
+        @if (User is not null && Utils.UserHasHandle(User))
+        {
+
+            if (!Model.PostIsLikedByUser())
+            {
+                <form asp-action="Like" asp-route-id="@Model.PostItId">
+                    <input type="hidden" asp-for="@Model.PostItId" />
+                    <input type="submit" value="Like" class="btn btn-secondary" />
+                </form>
+            }
+            else
+            {
+                <form asp-action="Unlike" asp-route-id="@Model.PostItId">
+                    <input type="hidden" asp-for="@Model.PostItId" />
+                    <input type="submit" value="Unlike" class="btn btn-secondary" />
+                </form>
+            }
+        }
+
+        <a asp-action="View" asp-route-id="@Model.PostItId" class="btn btn-secondary">View</a>
+    </div>
+</div>

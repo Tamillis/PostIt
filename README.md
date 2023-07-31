@@ -32,7 +32,9 @@ A quick demonstration of Unit testing can be found in the code [here](./PostItsT
 https://github.com/users/Tamillis/projects/2
 
 ## Figma Design
-LINK
+[Home Page Design](https://www.figma.com/file/1JO25scDlwgyS5pMxvU0Cb/PostIts-Homepage?type=design&node-id=0%3A1&mode=design&t=wMqsCHv867fsVw1f-1)
+
+I am not a designer, but this will do as a demonstration of "this is what I want you to make", and then the real site being how close I can get to that.
 
 ## Metroretro Retrospective
 LINK
