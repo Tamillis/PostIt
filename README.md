@@ -1,7 +1,7 @@
 # PostIt
 A .NET, Entity Framework, SpecFlow, MVC Web App demonstration.
 
-<img src="./PostItDemo/Assets/PostItsLogo.png" style="float:right;top:0px;" width="200px"/>
+<img src="./PostItDemo/wwwroot/Assets//PostItsLogo.png" style="float:right;top:0px;" width="200px"/>
 
 A very simple twitter clone where users can register & log in, post short messages with a title and a body, see everyone's posts organised by relevance (a simple recency + likes formula) and leave comment posts, i.e. posts that are anchored to some other post Id, which are displayed in a post's details web page.
 
@@ -32,7 +32,7 @@ A quick demonstration of Unit testing can be found in the code [here](./PostItsT
 https://github.com/users/Tamillis/projects/2
 
 ## Figma Design
-[Home Page Design](https://www.figma.com/file/1JO25scDlwgyS5pMxvU0Cb/PostIts-Homepage?type=design&node-id=0%3A1&mode=design&t=wMqsCHv867fsVw1f-1)
+# [Home Page Design](https://www.figma.com/file/1JO25scDlwgyS5pMxvU0Cb/PostIts-Homepage?type=design&node-id=0%3A1&mode=design&t=wMqsCHv867fsVw1f-1)
 
 I am not a designer, but this will do as a demonstration of "this is what I want you to make", and then the real site being how close I can get to that.
 
