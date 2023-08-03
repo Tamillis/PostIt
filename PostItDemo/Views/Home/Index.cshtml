@@ -5,6 +5,7 @@
 
 @model HomePageDTO
 
+<div class="container-fluid">
 <div class="text-center">
     <h1 class="display-4">Post It!</h1>
     @{
@@ -13,56 +14,65 @@
         if (Model != null && Model.Handle != null) prevHandle = Model.Handle;
         if (Model != null && Model.Passwd != null) prevPassword = Model.Passwd;
     }
-    @{
-        if (Model is not null && Model.NewlyRegistered)
-        {
-            <h2 class="display-6">@Model.Handle Registered!</h2>
-            <h3 class="text-md-center">Please Log In</h3>
-        }
-        else if (Utils.UserHasHandle(User))
-        {
-            <h2 class="display-6">Logged in as: @Utils.GetUserHandle(User)</h2>
-        }
-        else
-        {
-            <h2 class="display-6">Log In or Register</h2>
-        }
-    }
-    
-    @{   
-        if(Utils.UserHasHandle(User))
-        {
-            <form>
-                <button value="Log In" class="btn btn-primary" asp-action="LogOut" asp-controller="Home">Logout</button>
-            </form>
-        }
-        else
-        {
-            <div class="card-group">
-            <form method="post" class="card">           
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Handle" class="control-label"></label>
-                    <input asp-for="Handle" class="form-control" default="@prevHandle" />
-                    <span asp-validation-for="Handle" class="text-danger"></span>
-                    @if(Model.Error)
-                    {
-                        <span class="text-danger">@Model.ErrorMessage</span>
-                    }
-                </div>
-                <div class="form-group">
-                    <label asp-for="Passwd" class="control-label">Password</label>
-                    <input asp-for="Passwd" type="password" class="form-control" default="@prevPassword"/>
-                    <span asp-validation-for="Passwd" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Log In" class="btn btn-primary" asp-action="LogIn"/>
-                    <input type="submit" value="Register" class="btn btn-primary" asp-action="Register" />
-                </div>
-            </form>  
-            </div>
-        }
-    }
 
-    <a asp-controller="PostIts" asp-action="Index" class="btn btn-secondary">View PostIts</a>
+    <div class="single-post m-center">
+
+        <div class="post-title">
+            @{
+                if (Model is not null && Model.NewlyRegistered)
+                {
+                    <h2 class="display-6">@Model.Handle Registered!</h2>
+                    <h3 class="text-md-center">Please Log In</h3>
+                }
+                else if (Utils.UserHasHandle(User))
+                {
+                    <h2 class="display-6">Logged in as: @Utils.GetUserHandle(User)</h2>
+                }
+                else
+                {
+                    <h2 class="display-6">Log In or Register</h2>
+                }
+            }
+        </div>
+
+        <div class="post-body">
+            @{   
+                if(Utils.UserHasHandle(User))
+                {
+                        <form class="m-top-xs">
+                        <button value="Log In" class="btn btn-primary" asp-action="LogOut" asp-controller="Home">Logout</button>
+                    </form>
+                }
+                else
+                {
+                        <form method="post" class="m-top-xs">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group m-top-xs">
+                            <label asp-for="Handle" class="control-label"></label>
+                            <input asp-for="Handle" class="form-control" default="@prevHandle" />
+                            <span asp-validation-for="Handle" class="text-danger"></span>
+                            @if(Model.Error)
+                            {
+                                <span class="text-danger">@Model.ErrorMessage</span>
+                            }
+                        </div>
+                            <div class="form-group m-top-xs">
+                            <label asp-for="Passwd" class="control-label">Password</label>
+                            <input asp-for="Passwd" type="password" class="form-control" default="@prevPassword"/>
+                            <span asp-validation-for="Passwd" class="text-danger"></span>
+                        </div>
+                            <div class="form-group m-top-xs">
+                            <input type="submit" value="Log In" class="btn btn-primary" asp-action="LogIn"/>
+                            <input type="submit" value="Register" class="btn btn-primary" asp-action="Register" />
+                        </div>
+                    </form>
+                }
+            }
+
+                <div class="m-center m-top-xs">
+                <a asp-controller="PostIts" asp-action="Index" class="btn btn-secondary">View PostIts</a>
+            </div>
+        </div>
+    </div>
+</div>
 </div>

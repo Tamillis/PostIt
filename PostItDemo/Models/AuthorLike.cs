@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
 
 namespace PostItDemo.Models
 {
@@ -10,6 +9,6 @@ namespace PostItDemo.Models
         public PostIt PostIt { get; set; }
         public Author Author { get; set; }
 
-        
+
     }
 }

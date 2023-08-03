@@ -1,17 +1,13 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using PostItDemo.Controllers;
 using PostItDemo.Models;
 using System.Security.Claims;
-using System.Security.Policy;
 
 namespace PostItsTests
 {
     public class GivenUtils
     {
-        [TestCase(0,1)]
-        [TestCase(1,2)]
+        [TestCase(0, 1)]
+        [TestCase(1, 2)]
         public void GetPostValue_WithTodayAndGivenLikes_ValueIsExpected(int likes, double expected)
         {
             //Arrange

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PostItDemo.Models;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -87,7 +86,7 @@ namespace PostItDemo.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             // Clear the current context's User (otherwise logout doesn't happen until a refresh)
             HttpContext.User = new ClaimsPrincipal();
-            
+
             var blankUser = new HomePageDTO();
             return View("Index", blankUser);
         }

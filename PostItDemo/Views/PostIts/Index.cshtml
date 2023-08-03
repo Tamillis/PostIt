@@ -5,25 +5,28 @@
 
 @{
     ViewData["Title"] = "PostIts";
-}
 
-<h1>PostIts</h1>
+    string handle = "Anon";
 
-
-<h2>What do you want to Post?</h2>
-
-@if (Utils.UserHasHandle(User))
-{
-    <h3>Hello @Utils.GetUserHandle(User)!</h3>
-}
-
-<partial name="/Views/PostIts/_PostForm.cshtml" model="new PostIt()" />
-
-<div class="main-posts">
-    @foreach (var item in Model)
+    if (null != User && Utils.UserHasHandle(User))
     {
-        <partial name="/Views/PostIts/_PostIt.cshtml" model="item" />
+        handle = Utils.GetUserHandle(User);
     }
+}
+
+<div class="newpost-container z-top">
+    <h1 class="display-2">@handle's postboard</h1>
+    <h2 class="display-6">New Post</h2>
+    <partial name="/Views/PostIts/_PostForm.cshtml" model="new PostIt()" />
+</div>
+
+<div class="main-posts-container">
+    <div class="main-posts">
+        @foreach (var item in Model)
+        {
+            <partial name="/Views/PostIts/_PostIt.cshtml" model="item" />
+        }
+    </div>
 </div>
 
 @section Scripts {

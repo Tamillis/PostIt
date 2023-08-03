@@ -7,7 +7,7 @@ namespace PostItDemo.Controllers
 {
     public class PostItsController : Controller
     {
-        private readonly PostItContext _context; 
+        private readonly PostItContext _context;
         private readonly ILogger<PostItsController> _logger;
 
         public PostItsController(ILogger<PostItsController> logger, PostItContext context)
@@ -22,7 +22,7 @@ namespace PostItDemo.Controllers
             //get all posts
             List<PostIt> postIts = await _context.PostIts
                 .Include(p => p.Author)
-                .Include(p=>p.AuthorLikes)                
+                .Include(p => p.AuthorLikes)
                 .ToListAsync()!;
 
             if (postIts == null)
@@ -33,9 +33,9 @@ namespace PostItDemo.Controllers
             //setup DTO with their extra data needed by the view; child posts, current user etc.
             List<PostDTO> posts = new();
 
-            foreach(var postIt in postIts)
+            foreach (var postIt in postIts)
             {
-                var authorLikes = 
+                var authorLikes =
                     await _context.AuthorLikes
                     .Where(al => al.PostIt.PostItId == postIt.PostItId)
                     .ToListAsync();
@@ -43,7 +43,7 @@ namespace PostItDemo.Controllers
                 var postDTO = new PostDTO(postIt, await GetUserAuthor(), authorLikes);
 
                 postDTO.ChildPosts = GetChildPosts(postIt.PostItId, postIts);
-                
+
                 posts.Add(postDTO);
             }
 
@@ -148,7 +148,7 @@ namespace PostItDemo.Controllers
             }
 
             var userAuthor = await GetUserAuthor();
-            if(userAuthor is null) return RedirectToAction(nameof(Index));
+            if (userAuthor is null) return RedirectToAction(nameof(Index));
 
             var newAuthorLike = new AuthorLike()
             {
@@ -173,9 +173,9 @@ namespace PostItDemo.Controllers
             Debug.WriteLine("Unlike " + id);
 
             var postIt = await _context.PostIts
-                .Include(p=>p.AuthorLikes)
+                .Include(p => p.AuthorLikes)
                 .ThenInclude(al => al.Author)
-                .Where(p=>p.PostItId==id)
+                .Where(p => p.PostItId == id)
                 .FirstOrDefaultAsync();
 
             var userAuthor = await GetUserAuthor();
@@ -183,8 +183,8 @@ namespace PostItDemo.Controllers
             if (postIt != null && postIt.AuthorLikes != null && userAuthor != null)
             {
                 var likesToRemove = postIt.AuthorLikes.Where(al => al.Author.Id == userAuthor.Id);
-                
-                foreach(var like in likesToRemove)
+
+                foreach (var like in likesToRemove)
                 {
                     postIt.AuthorLikes.Remove(like);
                 }

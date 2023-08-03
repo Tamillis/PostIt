@@ -49,7 +49,7 @@ namespace PostItDemo
             app.MapControllerRoute(
                 name: "post",
                 pattern: "PostIts/{id?}",
-                defaults: new {controller = "PostIts", action = "Index"});
+                defaults: new { controller = "PostIts", action = "Index" });
 
             app.MapControllerRoute(
                 name: "default",

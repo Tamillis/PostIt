@@ -1,3 +1,8 @@
+:root {
+    --xs: 4px;
+    --post-size: 400px;
+}
+
 html {
   font-size: 14px;
 }
@@ -21,23 +26,62 @@ body {
   margin-bottom: 60px;
 }
 
+/* Utility Classes */
+
+.z-top {
+    z-index: 100;
+}
+
+.m-center {
+    margin: 0px auto;
+}
+
+.m-top-xs {
+    margin-top: var(--xs);
+}
+
+/* Main Layout */
+.main-body {
+    max-width: 90vw;
+    margin: 0px auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+@media (min-width:850px) {
+    .main-body {
+        flex-direction: row;
+    }
+}
+
+.newpost-container {
+    align-self: start;
+}
+
+.main-posts-container {
+    margin: 0px auto;
+    width:fit-content;
+}
+
+/* Post CSS classes*/
+
 .main-posts {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .single-post {
     background-image: url("/Assets/blank_sticky_note.png");
-    background-size: max(15vw, 400px);
-
+    background-size: max(15vw, var(--post-size));
     width: 15vw;
     height: 15vw;
-    min-width: 400px;
-    min-height: 400px;
-
+    min-width: var(--post-size);
+    min-height: var(--post-size);
     padding: 3rem;
-    margin: 0px;
     transform: rotate(-5deg);
 }
 
