@@ -40,6 +40,10 @@ body {
     margin-top: var(--xs);
 }
 
+.h-fit {
+    height: fit-content;
+}
+
 /* Main Layout */
 .main-body {
     max-width: 90vw;

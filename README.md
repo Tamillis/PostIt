@@ -13,12 +13,27 @@ A very simple twitter clone where users can register & log in, post short messag
 - A per-post view where comment posts can be left, other comment posts seen
 - Can Edit and Delete your own posts, but not others'
 
-## Wanted Feature List
+### Wanted Feature List
 - Pagination
 - API endpoints
 
 ## Current State of the Project
 Sprint 1 is complete as of this push. Ready to start sprint 2, which doubles as a demonstration of the entire sprint process. There will be links to a kanban board, User Stories, Figma design board, a metro retrospective and a redone README suitable for the project. The README will contain an example of a User Story, its breakdown into SpecFlow Unit Tests, the result of those tests (passing) and then a short section on the code that makes it pass, all together functioning as a demonstration of TDD.
+
+### Login Page
+![Login Page](./Screenshots/LoginPage.jpg)
+
+### User Registration
+![Registration](./Screenshots/DavidRegistered.jpg)
+
+### Wrong Password
+![Wrong password](./Screenshots/WrongPassword.jpg)
+
+### Postboard
+![Poastboard](./Screenshots/Postboard.jpg)
+
+### New Post
+![New Post](./Screenshots/NewPost.jpg)
 
 ## QA Demonstration
 A quick demonstration of Unit testing can be found in the code [here](./PostItsTests/UtilsTests.cs)
