@@ -2,225 +2,35 @@
 @model PostItDemo.Models.PostDTO
 
 @{
-    var subtitle = "What do you want to say about this Post?";
-    var handle = "Anon";
     ViewData["Title"] = @Model.Title;
-    if (Utils.UserHasHandle(User))
-    {
-        subtitle = $"What do you want to say about this Post {Utils.GetUserHandle(User)}?";
-        handle = Utils.GetUserHandle(User);
-    }
+
+    var handle = "Anon";
+    if (Utils.UserHasHandle(User))  handle = Utils.GetUserHandle(User);
+
+    var title = $"{Model.Handle}'s Post";
+    var subtitle = $"What do you want to say about this Post, {handle}?";
+
+    var replyPostDTO = new PostDTO();
+    replyPostDTO.MotherPostIt = Model.PostItId;
 }
 
-<h1>@Model.Title</h1>
 
-<h2>@subtitle</h2>
+<div class="newpost-container z-top">
+    <h1 class="display-4">@title</h1>
+    <partial name="/Views/PostIts/_PostIt.cshtml" model="Model" />
+    <h2 class="display-6">@subtitle</h2>
+    <partial name="/Views/PostIts/_PostForm.cshtml" model="@replyPostDTO" />
+</div>
 
-<form asp-action="View">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" value="@Model.PostItId" name="MotherPostIt" />
-    <div class="form-group">
-        <label asp-for="Title" class="control-label"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger" value=""></span>
+<div class="main-posts-container">
+<h3 class="display-6">Comments</h3>
+    <div class="main-posts">
+        @foreach (var item in Model.ChildPosts)
+        {
+            <partial name="/Views/PostIts/_PostIt.cshtml" model="item" />
+        }
     </div>
-    <div class="form-group">
-        <label asp-for="Body" class="control-label"></label>
-        <input asp-for="Body" class="form-control" />
-        <span asp-validation-for="Body" class="text-danger" value=""></span>
-    </div>
-    <div class="form-group align-self-end">
-        <input type="submit" value="Post" class="btn btn-primary" />
-    </div>
-
-    <div>
-        <p>DATE: @DateTime.Now.Date</p>
-        <p>@handle</p>
-    </div>
-</form>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Body)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Handle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Uploaded)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Likes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Replies)
-            </th>
-            <th>
-                Actions
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                @Model.Title
-            </td>
-            <td>
-                @Model.Body
-            </td>
-            <td>
-                @{
-                    if (Model.Author == null)
-                    {
-                        string msg = "Anon";
-                        @msg
-                    }
-                    else
-                    {
-                        @Model.Author.Handle
-                    }
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelModel => Model.Uploaded)
-            </td>
-            <td>
-                @Html.DisplayFor(modelModel => Model.Likes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelModel => Model.Replies)
-            </td>
-            <td class="group">
-                @if (User is not null && Utils.UserHasHandle(User))
-                {
-
-                    if (!Model.PostIsLikedByUser())
-                    {
-                        <form asp-action="Like" asp-route-id="@Model.PostItId">
-                            <input type="hidden" asp-for="@Model.PostItId" />
-                            <input type="submit" value="Like" class="btn btn-secondary" />
-                        </form>
-                    }
-                    else
-                    {
-                        <form asp-action="Unlike" asp-route-id="@Model.PostItId">
-                            <input type="hidden" asp-for="@Model.PostItId" />
-                            <input type="submit" value="Unlike" class="btn btn-secondary" />
-                        </form>
-                    }
-                }
-
-                <a asp-action="Index" asp-route-id="@Model.PostItId" class="btn btn-secondary">View</a>
-                @if (Utils.UserHasHandle(User) && Utils.GetUserHandle(User) == Model.Handle)
-                {
-
-                    <a asp-action="Edit" asp-route-id="@Model.PostItId" model="@Model" class="btn">Edit</a>
-                    <form asp-action="Delete" asp-route-id="@Model.PostItId">
-                        <input type="hidden" asp-for="@Model.PostItId" />
-                        <input type="submit" value="Delete" class="btn btn-danger" />
-                    </form>
-                }
-            </td>
-        </tr>
-        
-    </tbody>
-</table>
-<table class="table">
-    <tbody>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Body)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Handle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Uploaded)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Likes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Replies)
-            </th>
-            <th>
-                Actions
-            </th>
-        </tr>
-        <tr>
-            @foreach (var item in Model.ChildPosts)
-            {
-                <td>
-                        @item.Title
-                </td>
-                <td>
-                        @item.Body
-                </td>
-                <td>
-                        @{
-                            if (item.Author == null)
-                            {
-                                string msg = "Anon";
-                                @msg
-                            }
-                            else
-                            {
-                                @item.Author.Handle
-                            }
-                        }
-                </td>
-                <td>
-                        @Html.DisplayFor(item => item.Uploaded)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => item.Likes)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => item.Replies)
-                </td>
-                <td class="group">
-                        @if (User is not null && Utils.UserHasHandle(User))
-                        {
-
-                            if (!item.PostIsLikedByUser())
-                            {
-                            <form asp-action="Like" asp-route-id="@item.PostItId">
-                                <input type="hidden" asp-for="@item.PostItId" />
-                                <input type="submit" value="Like" class="btn btn-secondary" />
-                            </form>
-                            }
-                            else
-                            {
-                            <form asp-action="Unlike" asp-route-id="@item.PostItId">
-                                <input type="hidden" asp-for="@item.PostItId" />
-                                <input type="submit" value="Unlike" class="btn btn-secondary" />
-                            </form>
-                            }
-                        }
-
-                    <a asp-action="View" asp-route-id="@item.PostItId" class="btn btn-secondary">View</a>
-                        @if (Utils.UserHasHandle(User) && Utils.GetUserHandle(User) == item.Handle)
-                        {
-
-                        <a asp-action="Edit" asp-route-id="@item.PostItId" model="@item" class="btn">Edit</a>
-                        <form asp-action="Delete" asp-route-id="@item.PostItId">
-                            <input type="hidden" asp-for="@item.PostItId" />
-                            <input type="submit" value="Delete" class="btn btn-danger" />
-                        </form>
-                        }
-                </td>
-            }
-        </tr>
-    </tbody>
-</table>
+</div>
 
 @section Scripts {
     @{

@@ -11,7 +11,7 @@
 <form asp-action="Index" class="single-post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" value="@handle" name="Handle"/>
-    <input type="hidden" value="@Model.PostItId" name="MotherPostIt" />
+    <input type="hidden" value="@Model.MotherPostIt" name="MotherPostIt" />
     <div class="post-header">
         <div class="form-group">
         <label asp-for="Title" class="post-title"></label>

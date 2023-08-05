@@ -59,5 +59,10 @@ namespace PostItDemo.Models
             else if (Utils.GetPostValue(this) < Utils.GetPostValue(other)) return 1;
             else return -1;
         }
+
+        public override string ToString()
+        {
+            return $"PostItId {PostItId}, MotherPostIt {MotherPostIt}, Title {Title}, Body {Body}, Handle {Handle}, Uploaded {Uploaded}";
+        }
     }
 }

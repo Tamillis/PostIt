@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using PostItDemo.Controllers;
 using PostItDemo.Models;
 
 namespace PostItDemo
@@ -22,6 +23,8 @@ namespace PostItDemo
                 options.SlidingExpiration = true;
                 options.AccessDeniedPath = "/Login";
             }); ;
+
+            builder.Services.AddScoped<IPostItService, PostItService>();
 
             var app = builder.Build();
 

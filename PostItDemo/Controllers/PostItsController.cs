@@ -9,21 +9,20 @@ namespace PostItDemo.Controllers
     {
         private readonly PostItContext _context;
         private readonly ILogger<PostItsController> _logger;
+        private readonly IPostItService _service;
 
-        public PostItsController(ILogger<PostItsController> logger, PostItContext context)
+        public PostItsController(ILogger<PostItsController> logger, PostItContext context, IPostItService service)
         {
             _context = context;
             _logger = logger;
+            _service = service;
         }
 
         // GET: gets all posts
         public async Task<IActionResult> Index()
         {
             //get all posts
-            List<PostIt> postIts = await _context.PostIts
-                .Include(p => p.Author)
-                .Include(p => p.AuthorLikes)
-                .ToListAsync()!;
+            List<PostIt>? postIts = _service.GetAll();
 
             if (postIts == null)
             {
@@ -35,12 +34,7 @@ namespace PostItDemo.Controllers
 
             foreach (var postIt in postIts)
             {
-                var authorLikes =
-                    await _context.AuthorLikes
-                    .Where(al => al.PostIt.PostItId == postIt.PostItId)
-                    .ToListAsync();
-
-                var postDTO = new PostDTO(postIt, await GetUserAuthor(), authorLikes);
+                var postDTO = new PostDTO(postIt, _service.GetUserAuthor(HttpContext.User), postIt.AuthorLikes);
 
                 postDTO.ChildPosts = GetChildPosts(postIt.PostItId, postIts);
 
@@ -58,16 +52,19 @@ namespace PostItDemo.Controllers
         // POST: PostIts
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index([Bind("Title,Body,Handle")] PostDTO postDTO)
+        public async Task<IActionResult> Index([Bind("Title,Body,Handle,MotherPostIt")] PostDTO postDTO)
         {
-            postDTO.Author = _context.Authors.Where(a => a.Handle == postDTO.Handle).FirstOrDefault();
-
+            postDTO.Author = _service.GetAuthor(postDTO.Handle);
+            
             postDTO.Uploaded = DateTime.Now.Date;
 
             if (ModelState.IsValid)
             {
-                _context.PostIts.Add(postDTO.ToPostIt());
-                await _context.SaveChangesAsync();
+                _service.Add(postDTO.ToPostIt());
+            }
+            else
+            {
+                Problem($"ModelState for:\n {postDTO} \nis not valid");
             }
 
             return RedirectToAction(nameof(Index));
@@ -77,29 +74,16 @@ namespace PostItDemo.Controllers
         [HttpGet, ActionName("View")]
         public async Task<IActionResult> ViewDetails(int id)
         {
-            var post = await _context.PostIts
-                .Include(p => p.Author)
-                .Include(p => p.AuthorLikes)
-                .Where(p => p.PostItId == id)
-                .FirstOrDefaultAsync();
-            var postIts = await _context.PostIts
-                .Include(p => p.Author)
-                .Include(p => p.AuthorLikes)
-                .ToListAsync();
+            var post = _service.Get(id);
 
-            if (post == null)
+            var postIts = _service.GetAll();
+
+            if (post == null || postIts == null)
             {
                 return NotFound();
             }
 
-            //setup DTO with their extra data needed by the view; child posts, current user etc.
-
-            var authorLikes =
-                await _context.AuthorLikes
-                .Where(al => al.PostIt.PostItId == post.PostItId)
-                .ToListAsync();
-
-            var postDTO = new PostDTO(post, await GetUserAuthor(), authorLikes);
+            var postDTO = new PostDTO(post, _service.GetUserAuthor(HttpContext.User), post.AuthorLikes);
 
             postDTO.ChildPosts = GetChildPosts(post.PostItId, postIts);
 
@@ -111,16 +95,13 @@ namespace PostItDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ViewDetails([Bind("Title,Body,Handle,MotherPostIt")] PostDTO postDTO)
         {
-            postDTO.Author = await GetUserAuthor();
+            postDTO.Author = _service.GetUserAuthor(HttpContext.User);
 
             postDTO.Uploaded = DateTime.Now.Date;
 
-            _logger.LogInformation($"{postDTO.MotherPostIt}");
-
             if (ModelState.IsValid)
             {
-                _context.PostIts.Add(postDTO.ToPostIt());
-                await _context.SaveChangesAsync();
+                _service.Add(postDTO.ToPostIt());
             }
             else
             {
@@ -135,19 +116,12 @@ namespace PostItDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Like(int id)
         {
-            if (_context.PostIts == null)
-            {
+            var postIt = _service.Get(id);
 
-                return RedirectToAction(nameof(Index));
-            }
+            if (postIt is null) return RedirectToAction(nameof(Index));
 
-            var postIt = await _context.PostIts.FindAsync(id);
-            if (postIt == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            var userAuthor = _service.GetUserAuthor(HttpContext.User);
 
-            var userAuthor = await GetUserAuthor();
             if (userAuthor is null) return RedirectToAction(nameof(Index));
 
             var newAuthorLike = new AuthorLike()
@@ -160,7 +134,7 @@ namespace PostItDemo.Controllers
 
             postIt.AuthorLikes.Add(newAuthorLike);
 
-            await _context.SaveChangesAsync();
+            _service.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
@@ -170,15 +144,9 @@ namespace PostItDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unlike(int id)
         {
-            Debug.WriteLine("Unlike " + id);
+            var postIt = _service.Get(id);
 
-            var postIt = await _context.PostIts
-                .Include(p => p.AuthorLikes)
-                .ThenInclude(al => al.Author)
-                .Where(p => p.PostItId == id)
-                .FirstOrDefaultAsync();
-
-            var userAuthor = await GetUserAuthor();
+            var userAuthor = _service.GetUserAuthor(HttpContext.User);
 
             if (postIt != null && postIt.AuthorLikes != null && userAuthor != null)
             {
@@ -189,7 +157,7 @@ namespace PostItDemo.Controllers
                     postIt.AuthorLikes.Remove(like);
                 }
 
-                await _context.SaveChangesAsync();
+                _service.SaveChanges();
             }
             else return Problem($"Entity at Id {id} not found");
 
@@ -197,56 +165,38 @@ namespace PostItDemo.Controllers
         }
 
         // GET: PostIts/Edit/5
+        // Get Edit View
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.PostIts == null)
-            {
-                return NotFound();
-            }
+            if (id is null) return NotFound();
+            
+            var postIt = _service.Get((int)id);
 
-            var postIt = await _context.PostIts.FindAsync(id);
-            if (postIt == null)
-            {
-                return NotFound();
-            }
+            if (postIt is null) return NotFound();
+
             return View(postIt);
         }
 
         // POST: PostIts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Update
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PostItId,Title,Body")] PostIt postIt)
         {
-            if (id != postIt.PostItId)
+            if (id != postIt.PostItId || !_service.PostItExists(id))
             {
                 return NotFound();
             }
 
             postIt.Uploaded = DateTime.Now.Date;
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return Problem($"ModelState is invalid for {postIt}");
+
+            if(_service.Update(postIt))
             {
-                try
-                {
-                    _context.Update(postIt);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PostItExists(postIt.PostItId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return View(postIt);
             }
-            return View(postIt);
+            else return RedirectToAction(nameof(Index));
         }
 
         // POST: PostIts/Delete/5
@@ -254,32 +204,17 @@ namespace PostItDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Debug.WriteLine("DeleteConfirmed " + id);
-            if (_context.PostIts == null)
-            {
-                return Problem("Entity set 'PostItContext.PostIts'  is null.");
-            }
+            _logger.LogWarning("DeleteConfirmed " + id);
 
-            var postIt = await _context.PostIts.FindAsync(id);
+            var postIt = _service.Get(id);
+
             if (postIt != null)
             {
-                _context.PostIts.Remove(postIt);
-                await _context.SaveChangesAsync();
+                if(!_service.Remove(id)) return Problem($"Entity at Id {id} not Removed successfully");
             }
             else return Problem($"Entity at Id {id} not found");
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PostItExists(int id)
-        {
-            return (_context.PostIts?.Any(e => e.PostItId == id)).GetValueOrDefault();
-        }
-
-        private async Task<Author?> GetUserAuthor()
-        {
-            if (!Utils.UserHasHandle(HttpContext.User)) return null;
-            return await _context.Authors.Where(a => a.Handle == Utils.GetUserHandle(HttpContext.User)).FirstOrDefaultAsync();
         }
 
         private List<PostDTO> GetChildPosts(int postItId, List<PostIt> allPosts)
