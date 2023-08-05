@@ -30,7 +30,7 @@ Sprint 1 is complete as of this push. Ready to start sprint 2, which doubles as 
 ![Wrong password](./Screenshots/WrongPassword.jpg)
 
 ### Postboard
-![Poastboard](./Screenshots/Postboard.jpg)
+![Poastboard](./Screenshots/PostBoard.jpg)
 
 ### New Post
 ![New Post](./Screenshots/NewPost.jpg)
