@@ -5,6 +5,28 @@ A C# .NET Entity Framework MVC Web App demonstration.
 
 A very simple twitter clone where users can register & log in, post short messages with a title and a body, see everyone's posts organised by relevance (a simple recency + likes formula) and leave comment posts, i.e. posts that are anchored to some other post.
 
+- [PostIt](#postit)
+  - [Feature List](#feature-list)
+    - [Wanted Feature List](#wanted-feature-list)
+  - [Current State of the Project](#current-state-of-the-project)
+    - [Login Page](#login-page)
+    - [User Registration](#user-registration)
+    - [Wrong Password](#wrong-password)
+    - [Postboard](#postboard)
+    - [New Post](#new-post)
+  - [QA Demonstration](#qa-demonstration)
+  - [User Journey Demonstration](#user-journey-demonstration)
+    - [#1 User Story](#1-user-story)
+    - [#2 SpecFlow Feature file](#2-specflow-feature-file)
+    - [#3 Tests](#3-tests)
+    - [#4 Implementation](#4-implementation)
+    - [#5 Product](#5-product)
+  - [KANBAN Board](#kanban-board)
+  - [Figma Design](#figma-design)
+  - [Metroretro Retrospective](#metroretro-retrospective)
+  - [Installation](#installation)
+    - [NuGet Dependencies](#nuget-dependencies)
+
 ## Feature List
 - Cookie-based Registration, with and Sign In and Sign Out.
   - Usernames (Handles) and Passwords (hashed) stored directly on database
@@ -36,9 +58,13 @@ Sprint 1 is complete as of this push. Ready to start sprint 2, which doubles as 
 ![New Post](./Screenshots/NewPost.jpg)
 
 ## QA Demonstration
-A quick demonstration of Unit testing can be found in the code [here](./PostItsTests/UtilsTests.cs)
+A demonstration of Unit testing using NUnit can be found in the code [here](./PostItsTests)
 
-TODO Create service layer and through that demonstrate SpecFlow Unit Testing of data.
+In Memory database use can be found with the PostItServiceShould tests.
+
+![PostItServiceShouldTests](./Screenshots/PostItServiceShouldTests.jpg)
+
+For a demonstration of SpecFlow use, see [User Journey Demonstration](#user-journey-demonstration)
 
 ## User Journey Demonstration
 Here is a demonstration of one user story, and its implementation throughout the project in a step by step manner; a workflow known as Test Driven Development.
@@ -46,12 +72,15 @@ Here is a demonstration of one user story, and its implementation throughout the
 
 ![User Story](./Screenshots/UserStory.jpg)
 
-### #2 Tests 
+### #2 SpecFlow Feature file
+
+TODO (Feature File screenshot)
+### #3 Tests 
 TODO (Unit testing project code screenshot)
-### #3 Implementation 
+### #4 Implementation 
 TODO (Code implementation screenshot)
 
-### #4 Product 
+### #5 Product 
 TODO (website screenshot/s)
 
 ## KANBAN Board
@@ -68,6 +97,9 @@ TODO
 
 ## Installation
 
-Under releases, download the provided .zip, unzip and, using Visual Studio (with ASP.NET and web development & SQL Server installed), open the .sln, click run.
+Under releases, download the provided .zip, unzip and open the .sln using Visual Studio (with ASP.NET and web development & SQL Server installed), install dependencies through NuGet (see screenshot below), click run.
 
-For the latest development iteration: clone the repo and load the .sln with Visual Studio (with ASP.NET and web development & SQL Server installed), and click run.
+For the latest development iteration: clone the repo and load the .sln using Visual Studio (with ASP.NET and web development & SQL Server installed), install dependencies through NuGet (see screenshot below), and click run.
+
+### NuGet Dependencies
+![Nuget Dependencies](./Screenshots/NugetDependencies.jpg)
