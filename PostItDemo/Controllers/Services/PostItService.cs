@@ -52,7 +52,7 @@ namespace PostItDemo.Controllers
         public Author? GetUserAuthor(ClaimsPrincipal user)
         {
             if (!Utils.UserHasHandle(user)) return null;
-            return _context.Authors.Where(a => a.Handle == Utils.GetUserHandle(user)).FirstOrDefault();
+            return GetAuthor(Utils.GetUserHandle(user));
         }
 
         public bool PostItExists(int id)
@@ -91,8 +91,7 @@ namespace PostItDemo.Controllers
             try
             {
                 _context.Update(postIt);
-                SaveChanges();
-                return true;
+                return SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
