@@ -1,5 +1,6 @@
 :root {
     --xs: 4px;
+    --s: 8px;
     --post-size: 400px;
 }
 
@@ -38,6 +39,10 @@ body {
 
 .m-top-xs {
     margin-top: var(--xs);
+}
+
+.m-top-xs {
+    margin-top: var(--s);
 }
 
 .h-fit {
@@ -115,4 +120,17 @@ body {
     padding: 0.5rem 0px;
     border-bottom: 1px dashed black;
     height: 32%;
+}
+
+/* Login Page CSS */
+.login-title{
+    height: fit-content;
+}
+
+.login-logout-btn {
+    margin-top: 10%;
+}
+
+.login-body {
+    height: fit-content;
 }

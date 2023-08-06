@@ -1,6 +1,10 @@
 ﻿@using PostItDemo.Controllers;
 @{
     ViewData["Title"] = "Home Page";
+    string prevHandle = "";
+    string prevPassword = "";
+    if (Model != null && Model.Handle != null) prevHandle = Model.Handle;
+    if (Model != null && Model.Passwd != null) prevPassword = Model.Passwd;
 }
 
 @model HomePageDTO
@@ -8,16 +12,10 @@
 <div class="container-fluid">
 <div class="text-center">
     <h1 class="display-4">Post It!</h1>
-    @{
-        string prevHandle = "";
-        string prevPassword = "";
-        if (Model != null && Model.Handle != null) prevHandle = Model.Handle;
-        if (Model != null && Model.Passwd != null) prevPassword = Model.Passwd;
-    }
 
     <div class="single-post m-center">
 
-        <div class="post-title h-fit">
+        <div class="login-title">
             @{
                 if (Model is not null && Model.NewlyRegistered)
                 {
@@ -35,12 +33,12 @@
             }
         </div>
 
-        <div class="post-body">
+        <div class="login-body">
             @{   
                 if(Utils.UserHasHandle(User))
                 {
-                        <form class="m-top-xs">
-                        <button value="Log In" class="btn btn-primary" asp-action="LogOut" asp-controller="Home">Logout</button>
+                    <form class="">
+                        <button value="Log In" class="btn btn-primary m-top-s login-logout-btn" asp-action="LogOut" asp-controller="Home">Logout</button>
                     </form>
                 }
                 else
