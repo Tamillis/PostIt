@@ -181,7 +181,7 @@ namespace PostItDemo.Controllers
         // Update
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PostItId,Title,Body")] PostIt postIt)
+        public async Task<IActionResult> Edit(int id, [Bind("PostItId,Title,Body,MotherPostIt")] PostIt postIt)
         {
             if (id != postIt.PostItId || !_service.PostItExists(id))
             {
@@ -194,9 +194,10 @@ namespace PostItDemo.Controllers
 
             if(_service.Update(postIt))
             {
-                return View(postIt);
+                return RedirectToAction(nameof(Index));
             }
-            else return RedirectToAction(nameof(Index));
+
+            else return Problem("Failed to update Post");
         }
 
         // POST: PostIts/Delete/5

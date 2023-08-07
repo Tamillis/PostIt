@@ -1,37 +1,49 @@
-﻿@model PostItDemo.Models.PostIt
+﻿@using PostItDemo.Controllers;
+@model PostItDemo.Models.PostIt
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = $"Edit {Model.Title}";
+
+    string date = $"{DateTime.Now.Year}/{DateTime.Now.Month}/{DateTime.Now.Day}";
+    string handle = "Anon";
+    if (null != User && Utils.UserHasHandle(User))
+    {
+        handle = Utils.GetUserHandle(User);
+    }
 }
 
-<h1>Edit</h1>
+<div class="z-top m-center">
+    <h1 class="display-2">Edit @handle's Post</h1>
+    <h2 class="display-6">@Model.Title</h2>
+    
+    <form asp-action="Edit" class="single-post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" value="@handle" name="Handle"/>
+        <input type="hidden" value="@Model.MotherPostIt" name="MotherPostIt" />
+        <input type="hidden" value="@Model.PostItId" name="PostItId" />
+        <div class="post-header">
+            <div class="form-group">
+            <label asp-for="Title" class="post-title"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group post-body">
+            <div class="form-group">
+            <label asp-for="Body" class="post-title"></label>
+            <input asp-for="Body" class="form-control" />
+            <span asp-validation-for="Body" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group align-self-end m-top-xs">
+            <input type="submit" value="Post" class="btn btn-primary" />
+        </div>
 
-<h4>PostIt</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="PostItId" />
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Body" class="control-label"></label>
-                <input asp-for="Body" class="form-control" />
-                <span asp-validation-for="Body" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="post-secondary">
+            <p>@handle</p>
+            <p>@date</p>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
